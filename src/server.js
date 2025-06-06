@@ -28,7 +28,7 @@ app.use(cookieParser());
 // CORS setup
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: process.env.CLIENT_URL ,
     credentials: true,
   })
 );
@@ -62,12 +62,21 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.authenticate('session'));
 
+app.use((req, res, next) => {
+  console.log('Session:', req.session);
+  console.log('User:', req.user);
+  console.log('Authenticated:', req.isAuthenticated());
+  next();
+});
+
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tutor', tutorRoutes);
 app.use('/api/parent', parentRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/reviews', reviewRoutes);
+
 
 // Health check route for Render
 app.get('/health', (req, res) => res.send('OK'));
