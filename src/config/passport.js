@@ -1,4 +1,5 @@
 // config/passport.js
+
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
@@ -15,37 +16,46 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const tutor = await TutorSchema.findById(id).select(' -password');
-    const parent = await ParentSchema.findById(id).select(' -password');
-    const user = tutor || parent;
-    if (!user) return done(null, false, { message: 'User not found' });
+    let user = await TutorSchema.findById(id).select('-password');
+    if (!user) {
+      user = await ParentSchema.findById(id).select('-password');
+    }
+
+    if (!user) {
+      return done(null, false, { message: 'User not found' });
+    }
+
     done(null, user);
   } catch (err) {
     done(err);
   }
 });
 
+passport.use(
+  new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+    try {
+      // Try to find user in both collections
+      let user = await TutorSchema.findOne({ email });
+      if (!user) {
+        user = await ParentSchema.findOne({ email });
+      }
 
+      if (!user) {
+        return done(null, false, { message: 'Incorrect email or password' });
+      }
 
-passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
-  try {
-    const tutor = await TutorSchema.findOne({ email });
-    
-    const parent = await ParentSchema.findOne({ email });
-    
-    const user = tutor || parent;
-    if (!user) {
-      return done(null, false, { message: 'Incorrect email or password' });
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return done(null, false, { message: 'Incorrect email or password' });
+      }
+
+      return done(null, user);
+    } catch (err) {
+      return done(err);
     }
+  })
+);
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return done(null, false, { message: 'Incorrect password or email' });
-
-    return done(null, user);
-  } catch (err) {
-    return done(err);
-  }
-}));
 
 
 
