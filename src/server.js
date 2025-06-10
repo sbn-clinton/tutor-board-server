@@ -50,9 +50,9 @@ app.use(
     }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 1 day
-      // secure: process.env.NODE_ENV === 'production', // always true in production (safe for Vercel + Render)
-      sameSite: 'lax', 
-      // sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // required: 'none' for cross-origin cookies in production
+      secure: process.env.NODE_ENV === 'production', // always true in production (safe for Vercel + Render)
+      // sameSite: 'lax', 
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // required: 'none' for cross-origin cookies in production
     },
   })
 );
