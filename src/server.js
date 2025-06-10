@@ -23,6 +23,10 @@ const app = express();
 app.set('trust proxy', 1);
 
 
+// Middleware
+app.use(cookieParser());
+
+
 
 // CORS setup
 app.use(
@@ -39,8 +43,6 @@ app.use((req, res, next) => {
 });
 
 
-// Middleware
-app.use(cookieParser());
 
 app.use(morgan('dev'));
 app.use(express.json());
