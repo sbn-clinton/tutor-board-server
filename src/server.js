@@ -27,10 +27,17 @@ app.set('trust proxy', 1);
 // CORS setup
 app.use(
   cors({
-    origin: process.env.CLIENT_URL ,
+    origin: 'https://tutor-board-client.vercel.app',  // EXACT match!
     credentials: true,
   })
 );
+
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
 
 // Middleware
 app.use(cookieParser());
