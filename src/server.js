@@ -50,7 +50,7 @@ app.use(
     }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 1 day
-      secure: process.env.NODE_ENV === 'production', // always true in production (safe for Vercel + Render)
+      // secure: process.env.NODE_ENV === 'production', // always true in production (safe for Vercel + Render)
       // sameSite: 'lax', 
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // required: 'none' for cross-origin cookies in production
     },
@@ -92,10 +92,7 @@ app.get('/dashboard', (req, res) => res.status(200).json({ message: 'Dashboard' 
 const PORT = process.env.PORT || 5000;
 
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
   })
