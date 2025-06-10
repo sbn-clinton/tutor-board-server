@@ -27,20 +27,15 @@ app.set('trust proxy', 1);
 app.use(cookieParser());
 
 
+// CORS setup
+const allowedOrigin = 'https://tutor-board-client.vercel.app';
 
 // CORS setup
-app.use(
-  cors({
-    origin: 'https://tutor-board-client.vercel.app',  // EXACT match!
-    credentials: true,
-  })
-);
-
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
+// Handle preflight requests (OPTIONS)
+app.options('*', cors({
+  origin: allowedOrigin,
+  credentials: true,
+}));
 
 
 
