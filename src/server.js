@@ -19,23 +19,38 @@ dotenv.config();
 
 const app = express();
 
-// If behind a proxy (Render), trust first proxy
-app.set('trust proxy', 1);
-
 
 // Middleware
 app.use(cookieParser());
 
 
+// If behind a proxy (Render), trust first proxy
+app.set('trust proxy', 1);
+
+
+
 // CORS setup
 const allowedOrigin = 'https://tutor-board-client.vercel.app';
 
-// CORS setup
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+  })
+);
+
 // Handle preflight requests (OPTIONS)
 app.options('*', cors({
   origin: allowedOrigin,
   credentials: true,
 }));
+
+
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 
 
 
