@@ -22,8 +22,7 @@ const app = express();
 // If behind a proxy (Render), trust first proxy
 app.set('trust proxy', 1);
 
-// Middleware
-app.use(cookieParser());
+
 
 // CORS setup
 app.use(
@@ -33,6 +32,9 @@ app.use(
   })
 );
 
+// Middleware
+app.use(cookieParser());
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,10 +42,8 @@ app.use(express.urlencoded({ extended: true }));
 // Session config
 app.use(
   session({
-    name: 'connect.sid',
     secret: process.env.SESSION_SECRET || 'supersecret',
-    // resave: false,
-    // saveUninitialized: false,
+    
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
       ttl: 24 * 60 * 60, // 1 day
@@ -51,7 +51,7 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 1 day
       secure: process.env.NODE_ENV === 'production', // always true in production (safe for Vercel + Render)
-      // sameSite: 'lax', 
+      httpOnly: true,
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // required: 'none' for cross-origin cookies in production
     },
   })
