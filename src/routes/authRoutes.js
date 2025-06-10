@@ -47,8 +47,8 @@ router.get('/google/callback', passport.authenticate('google', {
 
 router.get("/user/:id", async (req, res) => {
   try {
-    const tutor = await TutorSchema.findById(req.params.id).select(' -password');
-    const parent = await ParentSchema.findById(req.params.id).select(' -password');
+    const tutor = await TutorSchema.findById(req.params.id).select('-password');
+    const parent = await ParentSchema.findById(req.params.id).select('-password');
     const user = tutor || parent;
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
