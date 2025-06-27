@@ -51,12 +51,22 @@ export const updateParentPicture = async (req, res) => {
 
 export const getParentProfilePicture = async (req, res) => {
   try {
-    const parent = await ParentSchema.findById(req.params.parentId).select(' -password');
+    const parent = await ParentSchema.findById(req.params.parentId).select('-password');
 
     if (!parent || !parent.profileImage || !parent.profileImage.data) {
       return res.status(404).send('No image found');
     }
 
+    // Set CORS headers - THIS IS THE KEY FIX
+    res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    
+    // Set cache headers for better performance
+    res.header('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+    
+    // Set content type and send image
     res.set('Content-Type', parent.profileImage.contentType);
     res.send(parent.profileImage.data);
   } catch (err) {
