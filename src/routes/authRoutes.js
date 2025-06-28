@@ -26,9 +26,9 @@ const registerValidation = [
     .normalizeEmail(),
   body('password')
     .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
+    .withMessage('Password must be at least 6 characters'),
+    // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    // .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
   body('role')
     .isIn(['tutor', 'parent'])
     .withMessage('Role must be either tutor or parent')
@@ -51,8 +51,8 @@ const refreshTokenValidation = [
 ];
 
 // Public routes
-router.post('/tutor/register', registerValidation, tutorRegister);
-router.post('/parent/register', registerValidation, parentRegister);
+router.post('/tutor-register', registerValidation, tutorRegister);
+router.post('/parent-register', registerValidation, parentRegister);
 router.post('/login', loginValidation, postLogin);
 router.post('/logout', getLogout);
 router.post('/refresh', refreshTokenValidation, refreshToken);
@@ -60,18 +60,5 @@ router.post('/refresh', refreshTokenValidation, refreshToken);
 // Protected routes
 router.get('/me', authenticateToken, getCurrentUser);
 
-
-// router.get("/user/:id", async (req, res) => {
-//   try {
-//     const tutor = await TutorSchema.findById(req.params.id).select('-password');
-//     const parent = await ParentSchema.findById(req.params.id).select('-password');
-//     const user = tutor || parent;
-//     if (!user) return res.status(404).json({ message: 'User not found' });
-//     res.json(user);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: 'Server Error' });
-//   }
-// });
 
 export default router;
