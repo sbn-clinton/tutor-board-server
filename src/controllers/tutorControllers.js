@@ -49,6 +49,7 @@ export const getTutorProfilePicture = async (req, res) => {
     if (!tutor || !tutor.profileImage || !tutor.profileImage.data) {
       return res.status(404).send('No image found');
     }
+   console.log("Tutor profileImage object:", tutor?.profileImage);
 
     res.set('Content-Type', tutor.profileImage.contentType);
     res.send(tutor.profileImage.data);
@@ -83,21 +84,34 @@ export const updateTutorProfile = async (req, res) => {
 export const updateTutorPicture = async (req, res) => {
   try {
     const userId = req.user.id; // From auth middleware
-    const user = await TutorSchema.findById(userId).select(' -password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    if (req.files?.profileImage?.[0]) {
-      const file = req.files.profileImage[0];
-      user.profileImage = {
-        data: file.buffer,
-        contentType: file.mimetype,
-      };
+    const user = await TutorSchema.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
+    console.log("User ID from auth:", userId);
+    console.log("Incoming files:", req.files);
+
+    const file = req?.files?.profileImage?.[0];
+    if (!file) {
+      return res.status(400).json({ message: 'No profile image uploaded' });
+    }
+
+    // Save profile image as per your schema
+    user.profileImage = {
+      data: file.buffer,
+      contentType: file.mimetype,
+    };
+
     await user.save();
-    res.json({ message: 'Tutor profile picture updated successfully', user });
+
+    res.json({
+      message: 'Tutor profile picture updated successfully',
+      user,
+    });
   } catch (err) {
-    console.error(err);
+    console.error("Error updating tutor picture:", err);
     res.status(500).json({ message: 'Server Error' });
   }
 };
